@@ -10,8 +10,8 @@ class Visualize:
 		"""
 		Parameters:
 			- constants : Constants, contains the number of labels, features and samples, and the labels
-			- t_test : np.array, shape (n_samples, n_labels), one-hot encoding
-			- t_pred : np.array, shape (n_samples, n_labels), one-hot encoding
+			- t_test : np.array, shape (n_samples, n_labels)
+			- t_pred : np.array, shape (n_samples, n_labels)
 		"""
 		self.constants = constants
 		self.accuracy = None
@@ -30,16 +30,20 @@ class Visualize:
 		This function analyses the results of the prediction. It computes the accuracy and the precision, the recall and the F1 score for each label.
 		"""
 		# Compute the accuracy
-		self.accuracy = np.sum(np.argmax(self.t_test, axis=1) == np.argmax(self.t_pred, axis=1)) / self.t_test.shape[0]
+		self.accuracy = np.sum(self.t_test == self.t_pred) / self.t_test.shape[0]
 
 		# Compute the precision, recall and F1 score
 		self.precision = []
 		self.recall = []
 		self.f1_score = []
-		for i in range(self.t_test.shape[1]):
-			TP = np.sum((np.argmax(self.t_test, axis=1) == i) & (np.argmax(self.t_pred, axis=1) == i))
-			FP = np.sum((np.argmax(self.t_test, axis=1) != i) & (np.argmax(self.t_pred, axis=1) == i))
-			FN = np.sum((np.argmax(self.t_test, axis=1) == i) & (np.argmax(self.t_pred, axis=1) != i))
+		for i in range(self.constants.get_n_labels()):
+			TP = np.sum((self.t_test == i) & (self.t_pred == i))
+			FP = np.sum((self.t_test != i) & (self.t_pred == i))
+			FN = np.sum((self.t_test == i) & (self.t_pred != i))
+			if TP + FP == 0 or TP + FN == 0:
+				print(f"TP = {TP}, FP = {FP}, FN = {FN}, label = {self.constants.get_labels()[i]}")
+				exit()
+
 			self.precision.append(TP / (TP + FP))
 			self.recall.append(TP / (TP + FN))
 			self.f1_score.append(2 * self.precision[i] * self.recall[i] / (self.precision[i] + self.recall[i]))
@@ -61,18 +65,26 @@ class Visualize:
 	def print_labels_scores(self):
 		""" Print the scores for each label """
 		print("===========================================")
-		print("| Label | Precision | Recall | F1 Score |")
-		print("|-------|-----------|--------|----------|")
+		print("|         Label        | Precision | Recall | F1 Score |")
+		print("|----------------------|-----------|--------|----------|")
 		for i in range(self.constants.get_n_labels()):
-			label_name = self.constants.labels[i]
-			print(f"| {i:<5} | {self.precision[i]:<9.4f} | {self.recall[i]:<6.4f} | {self.f1_score[i]:<8.4f} |")
+			label_name = self.constants.get_labels()[i]
+			if len(label_name) < 20:
+				label_name += " " * (20 - len(label_name))
+			else:
+				label_name = label_name[:17] + "..."
+			print(f"| {label_name} | {self.precision[i]:<9.3f} | {self.recall[i]:<6.3f} | {self.f1_score[i]:<8.3f} |")
 		print("===========================================")
+		print("| Mean                 | Precision | Recall | F1 Score |")
+		print("|----------------------|-----------|--------|----------|")
+		print(f"|                      | {self.mean_precision:<9.3f} | {self.mean_recall:<6.3f} | {self.mean_f1_score:<8.3f} |")
 
-	def show_confusion_matrix(self):
+
+	def plot_confusion_matrix(self):
 		""" Show the confusion matrix """
 
 		# Compute the confusion matrix
-		cm = confusion_matrix(np.argmax(self.t_test, axis=1), np.argmax(self.t_pred, axis=1))
+		cm = confusion_matrix(self.t_test, self.t_pred)
 
 		# Plot the confusion matrix
 		plt.figure(figsize=(10, 10))
@@ -80,11 +92,11 @@ class Visualize:
 		plt.title("Confusion matrix")
 		plt.colorbar()
 		tick_marks = np.arange(self.constants.get_n_labels())
-		plt.xticks(tick_marks, self.constants.labels, rotation=90)
-		plt.yticks(tick_marks, self.constants.labels)
+		plt.xticks(tick_marks, self.constants.get_labels(), rotation=90)
+		plt.yticks(tick_marks, self.constants.get_labels())
 		plt.tight_layout()
 		plt.ylabel('True label')
 		plt.xlabel('Predicted label')
 		plt.show()
-		
+
 		

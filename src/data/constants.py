@@ -8,6 +8,10 @@ class Constants:
 		self._n_features = n_features	# number of features (caracteristics of the leafs)
 		self._n_samples = n_samples		# number of samples (leafs)
 		self._labels = labels			# np.array, shape (n_labels, ), contains the labels
+		self._epochs = None		     	# number of epochs for the training
+		self._batch_size = None			# batch size for the training
+		self._learning_rate = None		# learning rate for the training
+		# self.optimizer = None			# optimizer for the training
 	
 	def get_n_labels(self):
 		return self._n_labels
@@ -20,9 +24,21 @@ class Constants:
 	
 	def get_labels(self):
 		return self._labels
+	
+	def get_epochs(self):
+		return self._epochs
+	
+	def get_batch_size(self):
+		return self._batch_size
+	
+	def get_learning_rate(self):
+		return self._learning_rate
+	
+	def set_training_parameters(self, epochs, batch_size, learning_rate):
+		self._epochs = epochs
+		self._batch_size = batch_size
+		self._learning_rate = learning_rate
 
-	def __str__(self):
-		return f"Constants(n_labels={self._n_labels}, n_features={self._n_features}, n_samples={self._n_samples}, labels={self._labels})"
 	
 	def print(self):
 		print("===========================================")

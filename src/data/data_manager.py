@@ -10,6 +10,7 @@ class DataManager:
 	def __init__(self, split_ratio=0.2):
 		self.path = "../data/raw/train.csv"
 		self.split_ratio = split_ratio
+		self.constants = None
 
 	def load_data(self):
 		""" load data
@@ -17,8 +18,8 @@ class DataManager:
 		- constants : Constants, contains the number of labels, features and samples, and the labels
 		- x_train : np.array, shape (n_samples, n_features)
 		- x_test : np.array, shape (n_samples, n_features)
-		- t_train : np.array, shape (n_samples, n_labels), one-hot encoding
-		- t_test : np.array, shape (n_samples, n_labels), one-hot encoding
+		- t_train : np.array, shape (n_samples, ), contains the labels
+		- t_test : np.array, shape (n_samples, ), contains the labels
 		"""
 		if not os.path.isfile(self.path):
 			print(f"File {self.path} not found !")
@@ -36,7 +37,7 @@ class DataManager:
 		Y = train_data['species']
 
 		# Transform the value of Y into one-hot encoding
-		Y = np.eye(len(label_encoder.classes_))[Y]
+		# Y = np.eye(len(label_encoder.classes_))[Y]
 
 		# Split the data into training and testing sets
 		X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=self.split_ratio)
@@ -48,6 +49,15 @@ class DataManager:
 		labels = label_encoder.classes_
 
 		# Create a Constants object
-		constants = Constants(n_labels, n_features, n_samples, labels)
+		self.constants = Constants(n_labels, n_features, n_samples, labels)
 
-		return constants, X_train, X_test, Y_train, Y_test
+		return self.constants, X_train, X_test, Y_train, Y_test
+	
+	def one_hot_encoding(self, Y):
+		""" Transform the value of Y into one-hot encoding
+		Parameters:
+			- Y : np.array, shape (n_samples, ), contains the labels
+		Output:
+			- Y : np.array, shape (n_samples, n_labels), one-hot encoding
+		"""
+		return np.eye(self.constants.get_n_labels())[Y]
