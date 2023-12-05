@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from sklearn.model_selection import GridSearchCV
+
 
 class Model(ABC):
 	""" Abstract class for models """
@@ -14,16 +16,28 @@ class Model(ABC):
 
 	@abstractmethod
 	def find_optimal_hyperparameters(self, X, Y, hyperparameters, cv=5):
-		""" Find the optimal hyperparameters for the model.
-		Parameters:
-			- X : np.array, shape (n_samples, n_features)
-			- Y : np.array, shape (n_samples, n_labels), one-hot encoding
-			- hyperparameters : dict, contains the hyperparameters to test. For each hyperparameter, the values to test are given in a list.   TODO : Check GridSearchCV de sklearn !!!!!!!!
-			- cv : int, number of folds for cross-validation
-		Output:
-			- best_hyperparameters : dict, contains the optimal hyperparameters
 		"""
-		pass
+		Find the optimal hyperparameters for the model using GridSearchCV.
+
+		Parameters:
+		- X : np.array, shape (n_samples, n_features), training features.
+		- Y : np.array, shape (n_samples,), training labels.
+		- hyperparameters : dict, a dictionary with hyperparameters to test. Each hyperparameter key maps to a list of values to test.
+		- cv : int, number of folds for cross-validation.
+
+		Returns:
+		- best_hyperparameters : dict, the best hyperparameters found.
+		"""
+		# Initialize GridSearchCV
+		grid_search = GridSearchCV(estimator=self, param_grid=hyperparameters, cv=cv, scoring='accuracy')
+		
+		# Execute GridSearchCV on the data
+		grid_search.fit(X, Y)
+		
+		# Retrieve and return the best hyperparameters
+		best_hyperparameters = grid_search.best_params_
+		
+		return best_hyperparameters
 
 	@abstractmethod
 	def train(self, X, Y, hyperparameters):
