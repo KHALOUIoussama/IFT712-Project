@@ -12,6 +12,7 @@ class Model(ABC):
 		"""
 		self.name = None
 		self.constants = constants
+		self.model = None
 		self.history = None
 
 	@abstractmethod
@@ -28,8 +29,11 @@ class Model(ABC):
 		Returns:
 		- best_hyperparameters : dict, the best hyperparameters found.
 		"""
+  
+		model = self.model
+  
 		# Initialize GridSearchCV
-		grid_search = GridSearchCV(estimator=self, param_grid=hyperparameters, cv=cv, scoring='accuracy')
+		grid_search = GridSearchCV(estimator=model, param_grid=hyperparameters, cv=cv, scoring='accuracy')
 		
 		# Execute GridSearchCV on the data
 		grid_search.fit(X, Y)
@@ -84,9 +88,4 @@ class Model(ABC):
 			plt.xlabel('Epoch')
 			plt.legend()
 			plt.show()
-
-
-
-
-	
-
+    
