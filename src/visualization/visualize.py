@@ -24,6 +24,7 @@ class Visualize:
 		self.mean_f1_score = None
 		self.t_test = t_test
 		self.t_pred = t_pred
+
 		self.compute_scores()
 
 	def compute_scores(self):
@@ -41,13 +42,25 @@ class Visualize:
 			TP = np.sum((self.t_test == i) & (self.t_pred == i))
 			FP = np.sum((self.t_test != i) & (self.t_pred == i))
 			FN = np.sum((self.t_test == i) & (self.t_pred != i))
-			if TP + FP == 0 or TP + FN == 0:
-				print(f"TP = {TP}, FP = {FP}, FN = {FN}, label = {self.constants.get_labels()[i]}")
-				exit()
 
-			self.precision.append(TP / (TP + FP))
-			self.recall.append(TP / (TP + FN))
-			self.f1_score.append(2 * self.precision[i] * self.recall[i] / (self.precision[i] + self.recall[i]))
+			if TP + FP == 0:
+				precision = 0
+			else:
+				precision = TP / (TP + FP)
+
+			if TP + FN == 0:
+				recall = 0
+			else:
+				recall = TP / (TP + FN)
+
+			if precision + recall == 0:
+				f1_score = 0
+			else:
+				f1_score = 2 * precision * recall / (precision + recall)
+
+			self.precision.append(precision)
+			self.recall.append(recall)
+			self.f1_score.append(f1_score)
 
 		# Compute the mean precision, recall and F1 score
 		self.mean_precision = np.mean(self.precision)

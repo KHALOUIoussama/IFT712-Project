@@ -14,7 +14,6 @@ class Model(ABC):
 		self.constants = constants
 		self.history = None
 
-	@abstractmethod
 	def find_optimal_hyperparameters(self, X, Y, hyperparameters, cv=5):
 		"""
 		Find the optimal hyperparameters for the model using GridSearchCV.
