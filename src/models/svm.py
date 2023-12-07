@@ -27,7 +27,7 @@ class Svm(Model):
         # Set the optimal hyperparameters to the model
         self.model = grid_search.best_estimator_
 
-        # Print the optimal hyperparameters (optional)
+        # Print the optimal hyperparameters
         print("Optimal Hyperparameters:", grid_search.best_params_)
 
     def train(self, X, Y, hyperparameters):
