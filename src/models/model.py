@@ -13,6 +13,7 @@ class Model(ABC):
 		"""
 		self.name = None
 		self.constants = constants
+		self.model = None
 		self.history = None
 
 	def find_optimal_hyperparameters(self, X, Y, hyperparameters_choices, cv=5):
@@ -28,6 +29,9 @@ class Model(ABC):
 		Returns:
 		- best_hyperparameters : dict, the best hyperparameters found.
 		"""
+  
+		model = self.model
+  
 		# Initialize GridSearchCV
 		grid_search = GridSearchCV(estimator=self.model, param_grid=hyperparameters_choices, cv=cv, scoring='accuracy')
 		print(f"The GridSearchCV will test {grid_search.n_splits_} combinations of hyperparameters.")
@@ -104,9 +108,4 @@ class Model(ABC):
 			plt.xlabel('Epoch')
 			plt.legend()
 			plt.show()
-
-
-
-
-	
-
+    
