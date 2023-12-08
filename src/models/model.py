@@ -80,6 +80,8 @@ class Model(ABC):
 		Output:
 			- Y : np.array, shape (n_samples,)
 		"""
+		if not self.model:
+			raise ValueError("The KMeans model has not been trained yet. Please call the train method.")
 		Y = self.model.predict(X)
 		return Y
 

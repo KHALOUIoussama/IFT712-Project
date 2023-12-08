@@ -18,14 +18,14 @@ class NeuralNetwork(Model):
 		self.model = MLPClassifier(activation='relu', solver='adam', shuffle=True, beta_1=beta_1, beta_2=beta_2, epsilon=epsilon) 
 
 
-	def train(self, X, Y, hyperparameters):
-		"""
-		Train the model on the training set (X, Y).
+	# def train(self, X, Y, hyperparameters):
+	# 	"""
+	# 	Train the model on the training set (X, Y).
 
-		Parameters:
-			- X : np.array, shape (n_samples, n_features)
-			- Y : np.array, shape (n_samples, )
-			- hyperparameters : dict, contains the hyperparameters to use and their values, output of find_optimal_hyperparameters
-		"""
-		self.model.set_params(**hyperparameters)
-		self.history = self.model.fit(X, Y)
+	# 	Parameters:
+	# 		- X : np.array, shape (n_samples, n_features)
+	# 		- Y : np.array, shape (n_samples, )
+	# 		- hyperparameters : dict, contains the hyperparameters to use and their values, output of find_optimal_hyperparameters
+	# 	"""
+	# 	self.model.set_params(**hyperparameters)
+	# 	self.history = self.model.fit(X, Y)
