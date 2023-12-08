@@ -34,7 +34,6 @@ class Model(ABC):
   
 		# Initialize GridSearchCV
 		grid_search = GridSearchCV(estimator=self.model, param_grid=hyperparameters_choices, cv=cv, scoring='accuracy')
-		print(f"The GridSearchCV will test {grid_search.n_splits_} combinations of hyperparameters.")
 		
 		# Execute GridSearchCV on the data
 		try:
