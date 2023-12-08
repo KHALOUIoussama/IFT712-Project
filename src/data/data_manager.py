@@ -4,16 +4,19 @@ import pandas as pd
 import numpy as np
 from src.data.constants import Constants
 import os
+from pretreatment import load_raw_data, save_raw_data
 
 
 class DataManager:
-	def __init__(self, split_ratio=0.2):
-		self.path = "../data/raw/train.csv"
+	def __init__(self, split_ratio=0.2, path="../data/raw/train.csv"):
+		self.path = path
 		self.split_ratio = split_ratio
 		self.constants = None
 
-	def load_data(self):
+	def load_data(self, super_classes=False):
 		""" load data
+		Parameters :
+		- super_classes : bool, whether or not to create super classes using classes prefix
 		Output : 
 		- constants : Constants, contains the number of labels, features and samples, and the labels
 		- x_train : np.array, shape (n_samples, n_features)
@@ -21,12 +24,7 @@ class DataManager:
 		- t_train : np.array, shape (n_samples, ), contains the labels
 		- t_test : np.array, shape (n_samples, ), contains the labels
 		"""
-		if not os.path.isfile(self.path):
-			print(f"File {self.path} not found !")
-			return
-
-		# Load the train.csv file
-		train_data = pd.read_csv(self.path)
+		train_data = load_raw_data(self.path)
 
 		# Encode the species column using LabelEncoder
 		label_encoder = LabelEncoder()
