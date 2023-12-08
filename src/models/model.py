@@ -1,5 +1,6 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from sklearn.model_selection import GridSearchCV
+from random import choice
 
 
 class Model(ABC):
@@ -15,15 +16,14 @@ class Model(ABC):
 		self.model = None
 		self.history = None
 
-	@abstractmethod
-	def find_optimal_hyperparameters(self, X, Y, hyperparameters, cv=5):
+	def find_optimal_hyperparameters(self, X, Y, hyperparameters_choices, cv=5):
 		"""
 		Find the optimal hyperparameters for the model using GridSearchCV.
 
 		Parameters:
 		- X : np.array, shape (n_samples, n_features), training features.
 		- Y : np.array, shape (n_samples,), training labels.
-		- hyperparameters : dict, a dictionary with hyperparameters to test. Each hyperparameter key maps to a list of values to test.
+		- hyperparameters_choices : dict, a dictionary with hyperparameters to test. Each hyperparameter key maps to a list of values to test.
 		- cv : int, number of folds for cross-validation.
 
 		Returns:
@@ -33,35 +33,55 @@ class Model(ABC):
 		model = self.model
   
 		# Initialize GridSearchCV
-		grid_search = GridSearchCV(estimator=model, param_grid=hyperparameters, cv=cv, scoring='accuracy')
+		grid_search = GridSearchCV(estimator=self.model, param_grid=hyperparameters_choices, cv=cv, scoring='accuracy')
+		print(f"The GridSearchCV will test {grid_search.n_splits_} combinations of hyperparameters.")
 		
 		# Execute GridSearchCV on the data
-		grid_search.fit(X, Y)
+		try:
+			grid_search.fit(X, Y)
+		except ValueError as e:
+			print("The hyperparameters are not valid ! Here is the error message :")
+			print(e)
+			return None
 		
 		# Retrieve and return the best hyperparameters
 		best_hyperparameters = grid_search.best_params_
 		
 		return best_hyperparameters
 
-	@abstractmethod
+	def get_alea_hyperparameters(self, X, Y, hyperparameters_choices):
+		""" Return random combination of hyperparameters
+		Paremeters:
+			- X : np.array, shape (n_samples, n_features), training features.
+			- Y : np.array, shape (n_samples,), training labels.
+			- hyperparameters_choices : dict, a dictionary with hyperparameters to test. Each hyperparameter key maps to a list of values to test.
+		Returns:
+			- hyperparameters : dict, the random hyperparameters
+		"""
+		hyperparameters = {}
+		for key in hyperparameters_choices.keys():
+			hyperparameters[key] = choice(hyperparameters_choices[key])
+		return hyperparameters
+
 	def train(self, X, Y, hyperparameters):
 		""" Train the model on the training set (X, Y).
 		Parameters:
 			- X : np.array, shape (n_samples, n_features)
-			- Y : np.array, shape (n_samples, n_labels), one-hot encoding
+			- Y : np.array, shape (n_samples, )
 			- hyperparameters : dict, contains the hyperparameters to use and their values, output of find_optimal_hyperparameters
 		"""
-		pass
+		self.model.set_params(**hyperparameters)
+		self.history = self.model.fit(X, Y)
 
-	@abstractmethod
 	def predict(self, X):
 		""" Predict the labels of the samples in X.
 		Parameters:
 			- X : np.array, shape (n_samples, n_features)
 		Output:
-			- Y : np.array, shape (n_samples, n_labels), one-hot encoding
+			- Y : np.array, shape (n_samples,)
 		"""
-		pass
+		Y = self.model.predict(X)
+		return Y
 
 	def show_history(self):
 		""" Show the history of the training """
