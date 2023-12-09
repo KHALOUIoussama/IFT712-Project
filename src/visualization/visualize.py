@@ -17,7 +17,7 @@ class Visualize:
 		"""
 		self.constants = constants
 		self.accuracy = None
-		self.log_loss = None
+		self.log_loss = 0
 		self.precision = None
 		self.recall = None
 		self.f1_score = None
@@ -69,7 +69,8 @@ class Visualize:
 		self.mean_precision = np.mean(self.precision)
 		self.mean_recall = np.mean(self.recall)
 		self.mean_f1_score = np.mean(self.f1_score)
-		self.log_loss = log_loss(self.t_test, self.t_pred_proba, labels=[i for i in range(self.constants.get_n_labels())])
+		if self.t_pred_proba is not None:
+			self.log_loss = log_loss(self.t_test, self.t_pred_proba, labels=[i for i in range(self.constants.get_n_labels())])
     
 
 	def print_mean_scores(self):

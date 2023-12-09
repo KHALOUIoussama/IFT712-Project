@@ -79,9 +79,25 @@ class Model(ABC):
 		Output:
 			- Y : np.array, shape (n_samples,)
 		"""
-		if not self.model:
-			raise ValueError("The KMeans model has not been trained yet. Please call the train method.")
+		if self.model is None:
+			raise ValueError("The model has not been trained yet. Please call the train method.")
 		Y = self.model.predict(X)
+		return Y
+
+	def predict_proba(self, X):
+		""" Predict the probabilities of each label for the samples in X.
+		Parameters:
+			- X : np.array, shape (n_samples, n_features)
+		Output:
+			- Y : np.array, shape (n_samples, n_labels)
+		"""
+		if self.model is None:
+			raise ValueError("The model has not been trained yet. Please call the train method.")
+		# Test if model has the predict_proba method
+		if not hasattr(self.model, "predict_proba"):
+			print("WARNING : The model has no predict_proba method !")
+			return None
+		Y = self.model.predict_proba(X)
 		return Y
 
 	def show_history(self):
