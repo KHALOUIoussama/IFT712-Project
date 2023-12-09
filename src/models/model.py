@@ -11,6 +11,7 @@ class Model(ABC):
 			- constants : Constants, contains the number of labels, features and samples, and the labels
 		"""
 		self.name = None
+		self.model = None
 		self.constants = constants
 		self.history = None
 
@@ -27,8 +28,11 @@ class Model(ABC):
 		Returns:
 		- best_hyperparameters : dict, the best hyperparameters found.
 		"""
+
+		model = self.model
+  
 		# Initialize GridSearchCV
-		grid_search = GridSearchCV(estimator=self, param_grid=hyperparameters, cv=cv, scoring='accuracy')
+		grid_search = GridSearchCV(estimator=model, param_grid=hyperparameters, cv=cv, scoring='accuracy')
 		
 		# Execute GridSearchCV on the data
 		grid_search.fit(X, Y)
