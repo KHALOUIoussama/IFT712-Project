@@ -1,5 +1,5 @@
 from model import Model
-import numpy as np
+from sklearn.ensemble import AdaBoostClassifier
 
 
 class AdaBoost(Model):
@@ -7,3 +7,4 @@ class AdaBoost(Model):
 	def __init__(self, constants):
 		super().__init__(constants)
 		self.name = "AdaBoost"
+		self.model = AdaBoostClassifier()  # Initialize the model attribute with the AdaBoostClassifier

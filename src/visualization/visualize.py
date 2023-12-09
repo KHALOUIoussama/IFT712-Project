@@ -1,21 +1,23 @@
 import numpy as np
 
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, log_loss
 from sys import exit
 import pandas as pd
 
 
 class Visualize:
-	def __init__(self, constants, t_test, t_pred):
+	def __init__(self, constants, t_test, t_pred, t_pred_proba):
 		"""
 		Parameters:
 			- constants : Constants, contains the number of labels, features and samples, and the labels
 			- t_test : np.array, shape (n_samples, n_labels)
 			- t_pred : np.array, shape (n_samples, n_labels)
+			- t_pred_proba : np.array, shape (n_samples, n_labels)
 		"""
 		self.constants = constants
 		self.accuracy = None
+		self.log_loss = None
 		self.precision = None
 		self.recall = None
 		self.f1_score = None
@@ -24,6 +26,7 @@ class Visualize:
 		self.mean_f1_score = None
 		self.t_test = t_test
 		self.t_pred = t_pred
+		self.t_pred_proba = t_pred_proba
 
 		self.compute_scores()
 
@@ -66,10 +69,13 @@ class Visualize:
 		self.mean_precision = np.mean(self.precision)
 		self.mean_recall = np.mean(self.recall)
 		self.mean_f1_score = np.mean(self.f1_score)
+		self.log_loss = log_loss(self.t_test, self.t_pred_proba, labels=[i for i in range(self.constants.get_n_labels())])
+    
 
 	def print_mean_scores(self):
 		""" Print the mean scores """
 		print("===========================================")
+		print(f"Log Loss       = {self.log_loss:.3f}")
 		print(f"Accuracy       = {self.accuracy:.3f}")
 		print(f"Mean precision = {self.mean_precision:.3f}")
 		print(f"Mean recall    = {self.mean_recall:.3f}")

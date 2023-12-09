@@ -1,5 +1,5 @@
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedShuffleSplit
 import pandas as pd
 import numpy as np
 from src.data.constants import Constants
@@ -41,8 +41,12 @@ class DataManager:
 		# Transform the value of Y into one-hot encoding
 		# Y = np.eye(len(label_encoder.classes_))[Y]
 
-		# Split the data into training and testing sets
-		X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=self.split_ratio)
+		# Stratified Shuffle Split
+		sss = StratifiedShuffleSplit(n_splits=1, test_size=self.split_ratio, random_state=42)
+
+		for train_index, test_index in sss.split(X, Y):
+			X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+			Y_train, Y_test = Y.iloc[train_index], Y.iloc[test_index]
 
 		# Get the number of labels, features and samples, and the labels
 		n_labels = len(label_encoder.classes_)
