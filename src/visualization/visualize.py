@@ -73,23 +73,25 @@ class Visualize:
 			self.log_loss = log_loss(self.t_test, self.t_pred_proba, labels=[i for i in range(self.constants.get_n_labels())])
 
 
-	def plot_mean_scores(self, other_visualize=None, title='Model Performance Comparison'):
+	def plot_mean_scores(self, other_visualize=None, title='Model Performance Comparison', filename=None, filepath=None):
 		if other_visualize is None:
-			labels = ['Log Loss', 'Accuracy', 'Mean Precision', 'Mean Recall', 'Mean F1 Score']
-			scores = [self.log_loss, self.accuracy, self.mean_precision, self.mean_recall, self.mean_f1_score]
+			labels = ['Accuracy', 'Mean Precision', 'Mean Recall', 'Mean F1 Score']
+			scores = [self.accuracy, self.mean_precision, self.mean_recall, self.mean_f1_score]
 
 			plt.figure(figsize=(8, 4))
-			plt.bar(labels, scores, color=['orange', 'blue', 'green', 'red', 'purple'])
+			plt.bar(labels, scores, color=['blue', 'green', 'red', 'purple'])
 			plt.xlabel('Metrics')
 			plt.ylabel('Percentage')
 			plt.title(title)
 			plt.ylim(0, 100)
 			for i, score in enumerate(scores):
 				plt.text(i, score + 2, f'{score:.2f}', ha='center')
+			if filename and filepath:
+				plt.savefig(filepath + '/' + filename)
 			plt.show()
 		else:
-			labels = ['Log Loss', 'Accuracy', 'Mean Precision', 'Mean Recall', 'Mean F1 Score']
-			current_scores = [self.log_loss, self.accuracy, self.mean_precision, self.mean_recall, self.mean_f1_score]
+			labels = ['Accuracy', 'Mean Precision', 'Mean Recall', 'Mean F1 Score']
+			current_scores = [self.accuracy, self.mean_precision, self.mean_recall, self.mean_f1_score]
 
 			x = np.arange(len(labels))  # Les labels de l'axe x
 			width = 0.35  # La largeur des barres
@@ -98,7 +100,7 @@ class Visualize:
 			rects1 = ax.bar(x - width/2, current_scores, width, label='Current Model')
 
 			if other_visualize:
-				other_scores = [other_visualize.log_loss, other_visualize.accuracy, other_visualize.mean_precision, other_visualize.mean_recall, other_visualize.mean_f1_score]
+				other_scores = [other_visualize.accuracy, other_visualize.mean_precision, other_visualize.mean_recall, other_visualize.mean_f1_score]
 				rects2 = ax.bar(x + width/2, other_scores, width, label='Optimized Model')
 
 			ax.set_ylabel('Scores')
@@ -106,7 +108,8 @@ class Visualize:
 			ax.set_xticks(x)
 			ax.set_xticklabels(labels)
 			ax.legend()
-
+			if filename and filepath:
+				plt.savefig(filepath + '/' + filename)
 			plt.show()
 
 
@@ -129,7 +132,7 @@ class Visualize:
 		print(f"|                      | {self.mean_precision:<9.3f}% | {self.mean_recall:<6.3f}% | {self.mean_f1_score:<8.3f}% |")
 
 
-	def plot_confusion_matrix(self, show_label=False):
+	def plot_confusion_matrix(self, show_label=False, filename=None, filepath=None):
 		""" Show the confusion matrix """
 
 		# Compute the confusion matrix
@@ -151,16 +154,17 @@ class Visualize:
 		plt.tight_layout()
 		plt.ylabel('True label')
 		plt.xlabel('Predicted label')
+		if filename and filepath:
+			plt.savefig(filepath + '/' + filename)
 		plt.show()
 
-	def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None, n_jobs=None, train_sizes=np.linspace(.1, 1.0, 5)):
+	@classmethod
+	def plot_learning_curve(cls, estimator, title, X, y, cv=None, n_jobs=None, train_sizes=np.linspace(.1, 1.0, 5), filename=None, filepath=None):
 		"""
 		Génère une courbe d'apprentissage simple.
 		"""
 		plt.figure()
 		plt.title(title)
-		if ylim is not None:
-			plt.ylim(*ylim)
 		plt.xlabel("Training examples")
 		plt.ylabel("Score")
 		train_sizes, train_scores, test_scores = learning_curve(estimator, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes)
@@ -176,5 +180,7 @@ class Visualize:
 		plt.plot(train_sizes, test_scores_mean, 'o-', color="g", label="Test score")
 
 		plt.legend(loc="best")
+		if filename and filepath:
+			plt.savefig(filepath + '/' + filename)
 		return plt
 		
