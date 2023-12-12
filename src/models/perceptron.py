@@ -26,21 +26,3 @@ class Perceptron(Model):
 				"max_iter": [100, 200, 300],
 			}
 	
-
-
-# from sklearn.metrics import accuracy_score, mean_squared_error
-# from sklearn.linear_model import Perceptron
-
-# class CustomPerceptron:
-# 	def __init__(self, **kwargs):
-# 		self.model = Perceptron(**kwargs)
-# 		self.history = {"accuracy": [], "loss": []}
-
-# 	def train(self, X, Y, X_val, Y_val, epochs):
-# 		for _ in range(epochs):
-# 			self.model.partial_fit(X, Y, classes=np.unique(Y))
-# 			predictions = self.model.predict(X_val)
-# 			accuracy = accuracy_score(Y_val, predictions)
-# 			loss = mean_squared_error(Y_val, predictions)
-# 			self.history["accuracy"].append(accuracy)
-# 			self.history["loss"].append(loss)

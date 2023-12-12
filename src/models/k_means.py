@@ -13,5 +13,5 @@ class KMeans(Model):
         """
         return {
             'n_init': ["auto", 10, 30, 50],
-            'algorithm' : ['auto', 'full', 'elkan', 'lloyd']
+            'algorithm' : ['elkan', 'lloyd']
         }
