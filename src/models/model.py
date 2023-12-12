@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from sklearn.model_selection import GridSearchCV
 from random import choice
 
@@ -6,15 +6,14 @@ from random import choice
 class Model(ABC):
 	""" Abstract class for models """
 
-	def __init__(self, constants):
-		"""
-		Parameters:
-			- constants : Constants, contains the number of labels, features and samples, and the labels
-		"""
+	def __init__(self):
 		self.name = None
-		self.constants = constants
 		self.model = None
-		self.history = None
+	
+	@abstractmethod
+	def get_hyperparameters_choices(self):
+		""" Return the hyperparameters to test on the format : "hyperparameter": [values] """
+		pass
 
 	def find_optimal_hyperparameters(self, X, Y, hyperparameters_choices, cv=5):
 		"""
@@ -29,9 +28,7 @@ class Model(ABC):
 		Returns:
 		- best_hyperparameters : dict, the best hyperparameters found.
 		"""
-  
-		model = self.model
-  
+    
 		# Initialize GridSearchCV
 		grid_search = GridSearchCV(estimator=self.model, param_grid=hyperparameters_choices, cv=cv, scoring='accuracy')
 		
@@ -48,11 +45,9 @@ class Model(ABC):
 		
 		return best_hyperparameters
 
-	def get_alea_hyperparameters(self, X, Y, hyperparameters_choices):
-		""" Return random combination of hyperparameters
+	def get_alea_hyperparameters(self, hyperparameters_choices):
+		""" Return random combination of hyperparameters (quicker than testing each combination)
 		Paremeters:
-			- X : np.array, shape (n_samples, n_features), training features.
-			- Y : np.array, shape (n_samples,), training labels.
 			- hyperparameters_choices : dict, a dictionary with hyperparameters to test. Each hyperparameter key maps to a list of values to test.
 		Returns:
 			- hyperparameters : dict, the random hyperparameters
@@ -70,7 +65,7 @@ class Model(ABC):
 			- hyperparameters : dict, contains the hyperparameters to use and their values, output of find_optimal_hyperparameters
 		"""
 		self.model.set_params(**hyperparameters)
-		self.history = self.model.fit(X, Y)
+		self.model.fit(X, Y)		
 
 	def predict(self, X):
 		""" Predict the labels of the samples in X.
@@ -99,30 +94,4 @@ class Model(ABC):
 			return None
 		Y = self.model.predict_proba(X)
 		return Y
-
-	def show_history(self):
-		""" Show the history of the training """
-		if self.history is None:
-			print("No history found !")
-		else:
-			print("===========================================")
-			print(f"History of the training of the {self.name} model :")
-			print(f"Number of epochs : {len(self.history.history['loss'])}")
-			print(f"Final loss       : {self.history.history['loss'][-1]}")
-			print(f"Final accuracy   : {self.history.history['accuracy'][-1]}")
-			print("===========================================")
-			print("Plotting the history ...")
-			self.plot_history()
-	
-	def plot_history(self):
-		""" Plot the history of the training """
-		if self.history is None:
-			print("No history found !")
-		else:
-			import matplotlib.pyplot as plt
-			plt.plot(self.history.history['loss'], label='loss')
-			plt.plot(self.history.history['accuracy'], label='accuracy')
-			plt.xlabel('Epoch')
-			plt.legend()
-			plt.show()
     

@@ -3,17 +3,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, log_loss
 from sklearn.model_selection import learning_curve
-import pandas as pd
 
 
 class Visualize:
-	def __init__(self, constants, t_test, t_pred, t_pred_proba):
+	def __init__(self, constants, t_test, t_pred, t_pred_proba, name):
 		"""
 		Parameters:
 			- constants : Constants, contains the number of labels, features and samples, and the labels
 			- t_test : np.array, shape (n_samples, n_labels)
 			- t_pred : np.array, shape (n_samples, n_labels)
 			- t_pred_proba : np.array, shape (n_samples, n_labels)
+			- name : str, name of the model
 		"""
 		self.constants = constants
 		self.accuracy = None
@@ -27,6 +27,7 @@ class Visualize:
 		self.t_test = t_test
 		self.t_pred = t_pred
 		self.t_pred_proba = t_pred_proba
+		self.name = name
 
 		self.compute_scores()
 
@@ -75,13 +76,18 @@ class Visualize:
 
 	def plot_mean_scores(self, other_visualize=None, title='Model Performance Comparison', filename=None, filepath=None):
 		if other_visualize is None:
-			labels = ['Accuracy', 'Mean Precision', 'Mean Recall', 'Mean F1 Score']
+			labels = ['Accuracy (%)', 'Mean Precision (%)', 'Mean Recall (%)', 'Mean F1 Score (%)']
 			scores = [self.accuracy, self.mean_precision, self.mean_recall, self.mean_f1_score]
+			colors = ['blue', 'green', 'red', 'purple']
+
+			if self.t_pred_proba is not None:
+				labels.append('Log Loss')
+				scores.append(self.log_loss)
+				colors.append('orange')
 
 			plt.figure(figsize=(8, 4))
-			plt.bar(labels, scores, color=['blue', 'green', 'red', 'purple'])
+			plt.bar(labels, scores, color=colors)
 			plt.xlabel('Metrics')
-			plt.ylabel('Percentage')
 			plt.title(title)
 			plt.ylim(0, 100)
 			for i, score in enumerate(scores):
@@ -93,15 +99,21 @@ class Visualize:
 			labels = ['Accuracy', 'Mean Precision', 'Mean Recall', 'Mean F1 Score']
 			current_scores = [self.accuracy, self.mean_precision, self.mean_recall, self.mean_f1_score]
 
+			if self.t_pred_proba is not None:
+				labels.append('Log Loss')
+				current_scores.append(self.log_loss)
+
 			x = np.arange(len(labels))  # Les labels de l'axe x
 			width = 0.35  # La largeur des barres
 
 			fig, ax = plt.subplots()
-			rects1 = ax.bar(x - width/2, current_scores, width, label='Current Model')
+			rects1 = ax.bar(x - width/2, current_scores, width, label=self.name)
 
 			if other_visualize:
 				other_scores = [other_visualize.accuracy, other_visualize.mean_precision, other_visualize.mean_recall, other_visualize.mean_f1_score]
-				rects2 = ax.bar(x + width/2, other_scores, width, label='Optimized Model')
+				if self.t_pred_proba is not None:
+					other_scores.append(other_visualize.log_loss)
+				rects2 = ax.bar(x + width/2, other_scores, width, label=other_visualize.name)
 
 			ax.set_ylabel('Scores')
 			ax.set_title(title)
@@ -139,7 +151,6 @@ class Visualize:
 		cm = confusion_matrix(self.t_test, self.t_pred)
 
 		# Plot the confusion matrix
-
 		if show_label:
 			plt.figure(figsize=(10, 10))
 		else:

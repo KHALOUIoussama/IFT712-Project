@@ -4,17 +4,21 @@ import pandas as pd
 import numpy as np
 from src.data.constants import Constants
 import os
-from pretreatment import load_raw_data, save_raw_data
+from pretreatment import load_raw_data
 
 
 class DataManager:
-	def __init__(self, split_ratio=0.2, data_path="../data/raw/train.csv", test_path="../data/raw/test.csv"):
+	def __init__(self, data_path, name, split_ratio=0.2):
 		self.data_path = data_path
-		self.test_path = test_path
 		self.split_ratio = split_ratio
 		self.constants = None
-		self.train_data = None
-		self.test_data = None
+		self.x_train = None
+		self.t_train = None
+		self.x_test = None
+		self.t_test = None
+		self.name = name
+
+		self.load_data()
 
 	def load_data(self):
 		""" load data
@@ -45,8 +49,8 @@ class DataManager:
 		sss = StratifiedShuffleSplit(n_splits=1, test_size=self.split_ratio, random_state=42)
 
 		for train_index, test_index in sss.split(X, Y):
-			X_train, X_test = X.iloc[train_index], X.iloc[test_index]
-			Y_train, Y_test = Y.iloc[train_index], Y.iloc[test_index]
+			self.x_train, self.x_test = X.iloc[train_index], X.iloc[test_index]
+			self.t_train, self.t_test = Y.iloc[train_index], Y.iloc[test_index]
 
 		# Get the number of labels, features and samples, and the labels
 		n_labels = len(label_encoder.classes_)
@@ -57,33 +61,6 @@ class DataManager:
 		# Create a Constants object
 		self.constants = Constants(n_labels, n_features, n_samples, labels)
 
-		return self.constants, X_train, X_test, Y_train, Y_test
-
-	def load_test_data(self):
-		"""
-		Load the test data. There is no label.
-		Output:
-			- constants : Constants, contains the number of labels, features and samples, and the labels
-			- X_test : np.array, shape (n_samples, n_features)
-		"""
-		self.test_data = load_raw_data(self.test_path)
-
-		# duplicate the data
-		test_data = self.test_data.copy()
-
-		# Extract features
-		X_test = test_data.drop(['id'], axis=1)
-
-		# Get the number of labels, features and samples, and the labels
-		n_labels = self.constants.get_n_labels()
-		n_features = X_test.shape[1]
-		n_samples = X_test.shape[0]
-		labels = self.constants.get_labels()
-
-		# Create a Constants object
-		constants = Constants(n_labels, n_features, n_samples, labels)
-
-		return constants, X_test
 
 	def save_test_data(self, Y_pred, path):
 		"""

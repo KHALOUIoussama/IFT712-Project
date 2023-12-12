@@ -4,21 +4,19 @@ from sklearn.tree import DecisionTreeClassifier
 
 class DecisionTree(Model):
 
-    def __init__(self, constants):
-        super().__init__(constants)
+    def __init__(self):
         self.name = "DecisionTree"
         self.model = DecisionTreeClassifier()  # Initialisation du modèle DecisionTreeClassifier
 
-    # def find_optimal_hyperparameters(self, X, Y, hyperparameters, cv=5):
-    #     # Utilisez la méthode de la classe parente car elle est déjà adéquate
-    #     return super().find_optimal_hyperparameters(X, Y, hyperparameters, cv)
-
-    # def train(self, X, Y, hyperparameters):
-    #     # Mettez à jour le modèle avec les hyperparamètres optimaux
-    #     self.model.set_params(**hyperparameters)
-    #     # Entraînement du modèle
-    #     self.model.fit(X, Y)
-
-    # def predict(self, X):
-    #     # Utiliser le modèle entraîné pour prédire
-    #     return self.model.predict(X)
+    def get_hyperparameters_choices(self):
+        """
+        Return the hyperparameters to test for the model.
+        """
+        return {
+            'max_depth': [None, 10, 20, 30, 40, 50],
+            'min_samples_split': [2, 5, 10, 20],
+            'min_samples_leaf': [1, 2, 4, 6, 8],
+            'max_features': ['sqrt', 'log2', None],
+            'criterion': ['gini', 'entropy'],
+            'splitter': ['best', 'random']
+        }

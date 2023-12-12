@@ -5,8 +5,7 @@ from sklearn.neural_network import MLPClassifier
 
 class NeuralNetwork(Model):
 
-	def __init__(self, constants):
-		super().__init__(constants)
+	def __init__(self):
 		self.name = 'Neural Network'
 
 		# Parameters of the neural network
@@ -17,15 +16,13 @@ class NeuralNetwork(Model):
 		# Initialize the neural network
 		self.model = MLPClassifier(activation='relu', solver='adam', shuffle=True, beta_1=beta_1, beta_2=beta_2, epsilon=epsilon) 
 
-
-	# def train(self, X, Y, hyperparameters):
-	# 	"""
-	# 	Train the model on the training set (X, Y).
-
-	# 	Parameters:
-	# 		- X : np.array, shape (n_samples, n_features)
-	# 		- Y : np.array, shape (n_samples, )
-	# 		- hyperparameters : dict, contains the hyperparameters to use and their values, output of find_optimal_hyperparameters
-	# 	"""
-	# 	self.model.set_params(**hyperparameters)
-	# 	self.history = self.model.fit(X, Y)
+	def get_hyperparameters_choices(self):
+		"""
+		Return the hyperparameters to test for the model.
+		"""
+		return {
+				"alpha": [1e-4, 1e-5],
+				"max_iter": [300, 500],
+				"batch_size": ["auto"],
+				"hidden_layer_sizes" : [(100,)]
+			}

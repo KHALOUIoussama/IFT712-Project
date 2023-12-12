@@ -22,12 +22,13 @@ class Constants:
 		return self._labels
 
 	
-	def print(self):
+	def print(self, labels=True):
 		print("===========================================")
 		print(f"n_labels   = {self._n_labels}")
 		print(f"n_features = {self._n_features}")
 		print(f"n_samples  = {self._n_samples}")
-		print(f"labels     = {self._labels}")
+		if labels:
+			print(f"labels     = {self._labels}")
 		print("===========================================")
 
 	
