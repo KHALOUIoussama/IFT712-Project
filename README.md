@@ -8,7 +8,7 @@ Notre projet vise à explorer en profondeur diverses méthodologies de classific
 
 L'objectif principal de ce projet est d'évaluer et de comparer six méthodes de classification distinctes dans le contexte de l'identification des feuilles d'arbres. Notre approche met l'accent sur l'utilisation de la validation croisée et de l'ajustement des hyperparamètres pour optimiser un modèle afin de trouver les solutions les plus efficaces pour la classification des feuilles.
 
-Nos méthodes de classification comprennent AdaBoost, les arbres de décision, le perceptron, les réseaux neuronaux, les machines à vecteurs de support (SVM) et les K-means. 
+Nos méthodes de classification comprennent AdaBoost, les arbres de décision, le perceptron, les réseaux neuronaux, les machines à vecteurs de support (SVM) et les KNN. 
 
 
 ## Organisation du projet 
@@ -41,7 +41,7 @@ Nos méthodes de classification comprennent AdaBoost, les arbres de décision, l
         │   ├── model.py
         │   ├── ada_boost.py
         │   ├── decision_tree.py
-        │   ├── k_means.py
+        │   ├── KNN.py
         │   ├── neural_network.py
         │   ├── perceptron.py
         |   └── svm.py
